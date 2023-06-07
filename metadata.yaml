@@ -10,6 +10,7 @@ email: ai.robotsky@example.com
 category: Fiction, Literature
 cover-image: images/cover.jpg
 toc-title: Contents
+indent: true
 rights: |
   © 2021 by A.I. Robotsky
 

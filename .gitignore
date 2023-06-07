@@ -1,0 +1,6 @@
+*.out
+*.log
+*.aux
+example-ms.tex
+out/
+

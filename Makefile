@@ -50,12 +50,12 @@ LATEX = pdflatex
 ##############################
 # TARGETS
 #
-# The main targets are epub and pdf.
+# The main targets are epub, docx, and pdf.
 # The view targets open the document
 #
-all: epub pdf ms
+all: epub docx ms
 epub: out/$(SLUG).epub
-pdf: out/$(SLUG).pdf
+docx: out/$(SLUG).docx
 ms: out/$(SLUG)-ms.pdf
 view: view-epub
 unzip: out/$(SLUG).unzip
@@ -65,8 +65,6 @@ unzip: out/$(SLUG).unzip
 # epubs.
 view-epub: out/$(SLUG).epub
 	open -a ebook-viewer $<
-view-pdf: out/$(SLUG).pdf
-	open $<
 view-ms: out/$(SLUG)-ms.pdf
 	open $<
 
@@ -81,6 +79,17 @@ out/$(SLUG).epub: metadata.yaml $(CONTENTS) $(BACKMATTER) $(STYLESHEET) $(COVER)
 		metadata.yaml \
 		$(CONTENTS) $(BACKMATTER)
 
+### DOCX
+out/$(SLUG).docx: metadata.yaml $(CONTENTS) $(BACKMATTER) $(STYLESHEET) $(COVER) | out
+	pandoc 	$(PANDOC_ARGS) \
+		-o out/$(SLUG).docx \
+		--css=$(STYLESHEET) \
+		--number-sections\
+		--reference-doc=templates/reference.docx\
+		metadata.yaml \
+		$(CONTENTS) $(BACKMATTER)
+
+
 # if you want to see what's being built inside the epub
 # you can unzip it and look at the files.
 out/$(SLUG).unzip: out/$(SLUG).epub | out
@@ -93,15 +102,6 @@ out/%.pdf: %.tex | out
 	$(LATEX) $<
 	mv `basename $@` $@
 
-
-### LaTeX - needed for pdf
-$(SLUG).tex: templates/book.tex metadata.yaml $(CONTENTS) tmp/backmatter.tex
-	pandoc $(PANDOC_ARGS) \
-		--template=templates/book.tex \
-		-o $@ metadata.yaml \
-		--top-level-division=chapter \
-		--metadata=ts:"`date`" \
-		$(CONTENTS)
 
 ### Manuscript-format Latex
 $(SLUG)-ms.tex: templates/sffms.tex metadata.yaml $(CONTENTS)
